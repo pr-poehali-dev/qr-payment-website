@@ -32,6 +32,12 @@ interface SelectedItem {
   price: number;
 }
 
+const VALID_PROMOS: Record<string, number> = {
+  "NEXUS10": 10,
+  "GOLD15": 15,
+  "S2STORE": 20,
+};
+
 export default function Index() {
   const [tab, setTab] = useState<Tab>("gold");
   const [selected, setSelected] = useState<SelectedItem | null>(null);
@@ -42,12 +48,6 @@ export default function Index() {
   const [promoApplied, setPromoApplied] = useState(false);
   const [promoError, setPromoError] = useState("");
   const [discount, setDiscount] = useState(0);
-
-  const VALID_PROMOS: Record<string, number> = {
-    "NEXUS10": 10,
-    "GOLD15": 15,
-    "S2STORE": 20,
-  };
 
   function applyPromo() {
     const code = promo.trim().toUpperCase();
