@@ -38,11 +38,38 @@ export default function Index() {
   const [payStep, setPayStep] = useState<PayStep>("form");
   const [userId, setUserId] = useState("");
   const [payOpen, setPayOpen] = useState(false);
+  const [promo, setPromo] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [promoError, setPromoError] = useState("");
+  const [discount, setDiscount] = useState(0);
+
+  const VALID_PROMOS: Record<string, number> = {
+    "NEXUS10": 10,
+    "GOLD15": 15,
+    "S2STORE": 20,
+  };
+
+  function applyPromo() {
+    const code = promo.trim().toUpperCase();
+    if (VALID_PROMOS[code]) {
+      setDiscount(VALID_PROMOS[code]);
+      setPromoApplied(true);
+      setPromoError("");
+    } else {
+      setPromoError("Промокод не найден или уже использован");
+      setPromoApplied(false);
+      setDiscount(0);
+    }
+  }
 
   function openPay(item: SelectedItem) {
     setSelected(item);
     setPayStep("form");
     setUserId("");
+    setPromo("");
+    setPromoApplied(false);
+    setPromoError("");
+    setDiscount(0);
     setPayOpen(true);
   }
 
@@ -436,6 +463,65 @@ export default function Index() {
                   </div>
                 </div>
 
+                {/* Promo code */}
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ display: "block", fontSize: 13, color: "#8b90b0", marginBottom: 8, fontWeight: 600 }}>
+                    Промокод <span style={{ color: "#4a4f70", fontWeight: 400 }}>(необязательно)</span>
+                  </label>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <input
+                      value={promo}
+                      onChange={e => { setPromo(e.target.value); setPromoError(""); setPromoApplied(false); setDiscount(0); }}
+                      placeholder="Введите промокод"
+                      disabled={promoApplied}
+                      style={{
+                        flex: 1,
+                        padding: "11px 14px",
+                        borderRadius: 8,
+                        border: promoApplied ? "1px solid #4ade80" : promoError ? "1px solid #ff4444" : "1px solid #3a3f60",
+                        background: "#161828",
+                        color: promoApplied ? "#4ade80" : "#fff",
+                        fontSize: 14,
+                        fontFamily: "'Share Tech Mono', monospace",
+                        outline: "none",
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        boxSizing: "border-box",
+                        opacity: promoApplied ? 0.7 : 1,
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={applyPromo}
+                      disabled={promoApplied || !promo.trim()}
+                      style={{
+                        padding: "11px 16px",
+                        borderRadius: 8,
+                        border: "1px solid #3a3f60",
+                        background: promoApplied ? "#4ade8022" : "#2e3250",
+                        color: promoApplied ? "#4ade80" : "#fff",
+                        cursor: promoApplied || !promo.trim() ? "not-allowed" : "pointer",
+                        fontSize: 13,
+                        fontWeight: 600,
+                        fontFamily: "'Rajdhani', sans-serif",
+                        opacity: !promo.trim() && !promoApplied ? 0.5 : 1,
+                        whiteSpace: "nowrap",
+                        transition: "all 0.2s",
+                      }}
+                    >
+                      {promoApplied ? "✓ Применён" : "Применить"}
+                    </button>
+                  </div>
+                  {promoError && (
+                    <div style={{ fontSize: 12, color: "#ff4444", marginTop: 6 }}>{promoError}</div>
+                  )}
+                  {promoApplied && (
+                    <div style={{ fontSize: 12, color: "#4ade80", marginTop: 6 }}>
+                      Скидка {discount}% применена!
+                    </div>
+                  )}
+                </div>
+
                 {/* Order summary */}
                 <div style={{
                   background: "#161828",
@@ -447,13 +533,29 @@ export default function Index() {
                     <span style={{ color: "#8b90b0", fontSize: 14 }}>Товар</span>
                     <span style={{ fontSize: 14, fontWeight: 600 }}>{selected.name}</span>
                   </div>
+                  {promoApplied && (
+                    <>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                        <span style={{ color: "#8b90b0", fontSize: 14 }}>Без скидки</span>
+                        <span style={{ fontSize: 14, color: "#4a4f70", textDecoration: "line-through" }}>{selected.price} ₽</span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                        <span style={{ color: "#4ade80", fontSize: 14 }}>Скидка {discount}%</span>
+                        <span style={{ fontSize: 14, color: "#4ade80" }}>−{Math.round(selected.price * discount / 100)} ₽</span>
+                      </div>
+                    </>
+                  )}
                   <div style={{ height: 1, background: "#2e3250", margin: "10px 0" }} />
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "#8b90b0", fontSize: 14 }}>Итого</span>
                     <span style={{
                       fontFamily: "'Orbitron', sans-serif",
                       fontWeight: 800, fontSize: 18, color: "#ff6b35"
-                    }}>{selected.price} ₽</span>
+                    }}>
+                      {promoApplied
+                        ? Math.round(selected.price * (1 - discount / 100))
+                        : selected.price} ₽
+                    </span>
                   </div>
                 </div>
 
