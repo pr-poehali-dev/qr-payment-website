@@ -91,6 +91,21 @@ export default function Index() {
     setPayStep("success");
   }
 
+  function handlePromoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setPromo(e.target.value);
+    setPromoError("");
+    setPromoApplied(false);
+    setDiscount(0);
+  }
+
+  function handleUserIdFocus(e: React.FocusEvent<HTMLInputElement>) {
+    e.target.style.borderColor = "#ff6b35";
+  }
+
+  function handleUserIdBlur(e: React.FocusEvent<HTMLInputElement>) {
+    e.target.style.borderColor = "#3a3f60";
+  }
+
   return (
     <div style={{ background: "#1a1d2e", minHeight: "100vh", fontFamily: "'Rajdhani', sans-serif", color: "#fff" }}>
       {/* Header */}
@@ -205,8 +220,7 @@ export default function Index() {
                     transition: "transform 0.2s, box-shadow 0.2s",
                     boxShadow: pkg.popular ? "0 0 20px rgba(255,107,53,0.2)" : "0 4px 16px rgba(0,0,0,0.3)",
                   }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)"; (e.currentTarget as HTMLDivElement).style.boxShadow = "0 12px 32px rgba(0,0,0,0.5)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLDivElement).style.boxShadow = pkg.popular ? "0 0 20px rgba(255,107,53,0.2)" : "0 4px 16px rgba(0,0,0,0.3)"; }}
+                  className="game-product-card"
                 >
                   {pkg.popular && (
                     <div style={{
@@ -289,8 +303,7 @@ export default function Index() {
                   transition: "transform 0.2s",
                   boxShadow: bp.popular ? "0 0 20px rgba(255,215,0,0.15)" : "0 4px 16px rgba(0,0,0,0.3)",
                 }}
-                onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)"}
-                onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)"}
+                className="game-product-card"
               >
                 {bp.popular && (
                   <div style={{
@@ -342,8 +355,7 @@ export default function Index() {
                   overflow: "hidden",
                   transition: "transform 0.2s",
                 }}
-                onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)"}
-                onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)"}
+                className="game-product-card"
               >
                 <div style={{ height: 180, overflow: "hidden", position: "relative", background: "#161828" }}>
                   <div style={{ position: "absolute", inset: 0, background: `radial-gradient(circle at center, ${skin.rarityColor}22 0%, transparent 70%)` }} />
@@ -455,8 +467,8 @@ export default function Index() {
                       outline: "none",
                       boxSizing: "border-box",
                     }}
-                    onFocus={e => (e.target as HTMLInputElement).style.borderColor = "#ff6b35"}
-                    onBlur={e => (e.target as HTMLInputElement).style.borderColor = "#3a3f60"}
+                    onFocus={handleUserIdFocus}
+                    onBlur={handleUserIdBlur}
                   />
                   <div style={{ fontSize: 12, color: "#4a4f70", marginTop: 6 }}>
                     Найдите свой ID в профиле игры → Настройки
@@ -471,7 +483,7 @@ export default function Index() {
                   <div style={{ display: "flex", gap: 8 }}>
                     <input
                       value={promo}
-                      onChange={e => { setPromo(e.target.value); setPromoError(""); setPromoApplied(false); setDiscount(0); }}
+                      onChange={handlePromoChange}
                       placeholder="Введите промокод"
                       disabled={promoApplied}
                       style={{
@@ -629,8 +641,7 @@ export default function Index() {
                     fontSize: 13, fontFamily: "'Rajdhani', sans-serif",
                     transition: "all 0.2s",
                   }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#ff6b35"; (e.currentTarget as HTMLButtonElement).style.color = "#ff6b35"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#3a3f60"; (e.currentTarget as HTMLButtonElement).style.color = "#8b90b0"; }}
+                  className="qr-paid-btn"
                 >
                   Я оплатил
                 </button>
@@ -698,6 +709,14 @@ export default function Index() {
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.3; }
+        }
+        .game-product-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 32px rgba(0,0,0,0.5) !important;
+        }
+        .qr-paid-btn:hover {
+          border-color: #ff6b35 !important;
+          color: #ff6b35 !important;
         }
       `}</style>
     </div>
